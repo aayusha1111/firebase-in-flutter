@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1028812058845",
+    "project_id": "learning-362c2",
+    "storage_bucket": "learning-362c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028812058845:android:d759a4fe3aa0691bd2ab34",
+        "android_client_info": {
+          "package_name": "com.aayusha.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQBgWC4xiOFZVF8AwQo43MxS40m8sgINA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
