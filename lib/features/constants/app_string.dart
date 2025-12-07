@@ -6,3 +6,4 @@ String userStr="Enter your username";
 String userNameValidation="Please enter your username";
 String nameStr="Enter your name";
 String addressStr="Enter your address";
+String phoneStr="Enter your phone number";

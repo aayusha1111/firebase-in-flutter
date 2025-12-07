@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/core/color_const.dart';
 import 'package:new_project/features/constants/app_string.dart';
+import 'package:new_project/pages/verification_page.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';
 import 'package:new_project/widgets/custom_text_formfield.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<SignupPage> {
     final _formKey = GlobalKey<FormState>();
 
   @override
@@ -71,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                 
                 CustomTextformfield(
                   
-                  labelText: userStr,
+                  labelText: nameStr,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return userNameValidation;
@@ -81,6 +82,55 @@ class _LoginPageState extends State<LoginPage> {
                 ),
           
                 SizedBox(height: 18),
+
+                Text(
+                  "Address",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 10,),
+          
+          
+                
+                CustomTextformfield(
+                  labelText: addressStr,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return passwordValidationStr;
+                    }
+                    return null;
+                  },
+                  
+                ),
+SizedBox(height: 10,),
+
+
+                Text(
+                  "Phone number",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 10,),
+          
+          
+                // PASSWORD FIELD
+                CustomTextformfield(
+                  labelText: phoneStr,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return passwordValidationStr;
+                    }
+                    return null;
+                  },
+                  
+                ),
+                   SizedBox(height: 10,),
+
+
                 Text(
                   "Password",
                   style: TextStyle(
@@ -91,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 10,),
           
           
-                // PASSWORD FIELD
+                
                 CustomTextformfield(
                   labelText: passwordStr,
                   validator: (value) {
@@ -104,25 +154,34 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 10,),
           
-                Padding(
-                  padding: const EdgeInsets.only(left: 230),
-                  child: Text("Forgot Password?"),
-                ),
-          
                 SizedBox(height: 30,),
                 CustomElevatedButton(
                   onPressed: () {
                     if(_formKey.currentState!.validate()){
-                      Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()));
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>VerificationPage()));
                     }
                   },
                   backgroundColor: Colors.blue,
-                  child: Text("Login",style: TextStyle(fontSize:18 ),),
+                  child: Text("Proceed",style: TextStyle(fontSize:18 ),),
                 ),
 
                 SizedBox(height: 30,),
 
-                Text("Didn't have an account? Signup")
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignupPage()),
+                    );
+                  },
+                  child: Text(
+                    "Didn't have an account? Login",
+                    style: TextStyle(
+                      color: Colors.blue, 
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
