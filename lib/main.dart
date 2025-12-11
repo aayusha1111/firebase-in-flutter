@@ -1,11 +1,12 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:new_project/firebase_options.dart';
-import 'package:new_project/google_login.dart';
 import 'package:new_project/pages/login_page.dart';
-
+import 'package:new_project/utils/route_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +60,12 @@ class _MyAppState extends State<MyApp> {
         message.notification?.body ?? "",
       );
     });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      navigatorKey.currentState?.pushNamed(Routes.notificationsRoute,arguments: NotificationPayload(
+        title: message.notification?.title,
+        body: message.notification?.body,
+      ));
+    });
   }
 
   getFcmToken() async {
@@ -72,7 +82,14 @@ class _MyAppState extends State<MyApp> {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveBackgroundNotificationResponse: (details) {
+        final data=jsonDecode(details.payload!);
+        navigatorKey.currentState?.pushNamed(Routes.notificationsRoute,arguments: NotificationPayload(title: data["title"],body: data["body"]));
+      },
+    );
   }
 
   void showSimpleNotification(String title, String body) async {
@@ -80,7 +97,7 @@ class _MyAppState extends State<MyApp> {
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
-    
+
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
@@ -96,12 +113,22 @@ class _MyAppState extends State<MyApp> {
       body,
       platformChannelSpecifics,
     );
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: jsonEncode({"title": title, "body": body}),
+    );
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
+      onGenerateRoute: RouteGenerator.generateRoute,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -111,4 +138,11 @@ class _MyAppState extends State<MyApp> {
       home: LoginPage(),
     );
   }
+}
+
+class NotificationPayload {
+  final String? title;
+  final String? body;
+
+  NotificationPayload({this.title, this.body});
 }

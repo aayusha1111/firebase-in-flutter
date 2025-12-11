@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:new_project/pages/signup_page.dart';
 
@@ -9,6 +11,8 @@ class VerificationPage extends StatefulWidget {
 }
 
 class _VerificationPageState extends State<VerificationPage> {
+  String selectedId='Passport';
+  File? uploadedImage;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +51,8 @@ class _VerificationPageState extends State<VerificationPage> {
 
                 SizedBox(height: 10),
 
+
+
                 Text(
                   "Upload your valid ID to continue your journey",
                   style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15),
@@ -57,11 +63,33 @@ class _VerificationPageState extends State<VerificationPage> {
                   "Select ID Type",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
+
+                SizedBox(height: 10,),
+
+               Column(
+              children: [
+                _idOption("Passport"),
+                _idOption("Citizenship ID"),
+                _idOption("School ID"),
+              ],
+            ),
               ],
             ),
           ),
         ),
-      ),
+      ), 
+    );
+  }
+   Widget _idOption(String idName) {
+    return RadioListTile<String>(
+      title: Text(idName),
+      value: idName,
+      groupValue: selectedId,
+      onChanged: (value) {
+        setState(() {
+          selectedId = value!;
+        });
+      },
     );
   }
 }
