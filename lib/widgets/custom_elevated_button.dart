@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatelessWidget {
-  CustomElevatedButton({
+  const CustomElevatedButton({
     super.key,
     this.borderRadius,
     this.backgroundColor,
@@ -10,30 +10,29 @@ class CustomElevatedButton extends StatelessWidget {
     this.onPressed,
   });
 
-   double? borderRadius;
-   Widget? child;
-   Color? backgroundColor;
-   Color? foregroundColor;
-   void Function()? onPressed;
-   
+  final double? borderRadius;
+  final Widget? child;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-     style: ButtonStyle(
-       minimumSize: WidgetStateProperty.all(const Size(double.infinity, 55)),
-
-    backgroundColor: MaterialStateProperty.all(backgroundColor ?? Colors.green),
-    foregroundColor: MaterialStateProperty.all(foregroundColor?? Colors.white),
-    shape: MaterialStateProperty.all(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius ?? 12),
-      ),
-    ),
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(const Size(0, 55)), // just height
+        backgroundColor:
+            MaterialStateProperty.all(backgroundColor ?? Colors.green),
+        foregroundColor:
+            MaterialStateProperty.all(foregroundColor ?? Colors.white),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius ?? 12),
+          ),
         ),
-        
+      ),
       onPressed: onPressed,
-      child: Center(child: child), 
+      child: Center(child: child),
     );
   }
 }

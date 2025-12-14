@@ -3,9 +3,13 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:new_project/firebase_options.dart';
 import 'package:new_project/pages/login_page.dart';
+import 'package:new_project/pages/verify.dart';
+import 'package:new_project/test_bloc/test.dart';
+import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/utils/route_generator.dart';
 
 void main() async {
@@ -126,16 +130,18 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      onGenerateRoute: RouteGenerator.generateRoute,
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        useMaterial3: false,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return MultiBlocProvider(providers: [BlocProvider<CounterBloc>(create: (_)=>CounterBloc())],
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
+        onGenerateRoute: RouteGenerator.generateRoute,
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          useMaterial3: false,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: TestOfBloc(),
       ),
-      home: LoginPage(),
     );
   }
 }
