@@ -6,8 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:new_project/firebase_options.dart';
-import 'package:new_project/pages/login_page.dart';
-import 'package:new_project/pages/verify.dart';
+import 'package:new_project/test_bloc/api_test.dart';
 import 'package:new_project/test_bloc/test.dart';
 import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/utils/route_generator.dart';
@@ -130,7 +129,8 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [BlocProvider<CounterBloc>(create: (_)=>CounterBloc())],
+    return MultiBlocProvider(providers: [BlocProvider<CounterBloc>(create: (_)=>CounterBloc()),
+     BlocProvider<ApiBloc>(create: (_)=>ApiBloc())],
       child: MaterialApp(
         navigatorKey: navigatorKey,
         onGenerateRoute: RouteGenerator.generateRoute,
@@ -140,7 +140,7 @@ class _MyAppState extends State<MyApp> {
           useMaterial3: false,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: TestOfBloc(),
+        home: PostPage(),
       ),
     );
   }

@@ -84,6 +84,7 @@ class _LoginPageState extends State<LoginPage> {
               
                 CustomTextformfield(
                   labelText: passwordStr,
+                  suffixIcon: IconButton(onPressed: (){}, icon: Icon(Icons.visibility_off)),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return passwordValidationStr;
@@ -147,3 +148,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
