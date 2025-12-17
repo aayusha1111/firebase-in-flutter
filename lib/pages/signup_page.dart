@@ -1,6 +1,11 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/core/color_const.dart';
-import 'package:new_project/features/constants/app_string.dart';
+import 'package:new_project/core/app_string.dart';
+import 'package:new_project/features/authentication/bloc/auth_bloc.dart';
+import 'package:new_project/features/authentication/bloc/auth_event.dart';
+import 'package:new_project/features/authentication/model/user.dart';
 import 'package:new_project/pages/login_page.dart';
 import 'package:new_project/pages/verification_page.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';
@@ -14,6 +19,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  String? name, address, emailAddress, password;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -74,6 +80,9 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
+                    onChanged: (val) {
+                      name = val;
+                    },
                   ),
 
                   SizedBox(height: 18),
@@ -92,23 +101,28 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
+                    onChanged: (val) {
+                      address = val;
+                    },
                   ),
                   SizedBox(height: 10),
 
                   Text(
-                    "Phone number",
+                    "Email address",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 10),
 
-                  
                   CustomTextformfield(
-                    labelText: phoneStr,
+                    labelText: emailStr,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return passwordValidationStr;
+                        return emailValidationStr;
                       }
                       return null;
+                    },
+                    onChanged: (val) {
+                      emailAddress = val;
                     },
                   ),
                   SizedBox(height: 10),
@@ -127,25 +141,43 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
+                    onChanged: (val) {
+                      password = val;
+                    },
                   ),
 
                   SizedBox(height: 30),
                   CustomElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => VerificationPage(),
-                          ),
-                        );
-                      }
+                      User user = User(
+                        name: name,
+                        address: address,
+                        email: emailAddress,
+                        password: password,
+                        profileUrl:
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Salman_Khan_in_2023_%281%29_%28cropped%29.jpg/250px-Salman_Khan_in_2023_%281%29_%28cropped%29.jpg",
+                        identity: Identity(
+                          type: "passport",
+                          url:
+                              "https://imgv2-2-f.scribdassets.com/img/document/692140141/original/7de1429d40/1?v=1",
+                        ),
+                      );
+
+                       context.read<AuthBloc>().add(SignupEvent(user)) ;
+                      // if (_formKey.currentState!.validate()) {
+                      //   Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => VerificationPage(),
+                      //     ),
+                      //   );
+                      // }
                     },
-                    backgroundColor:primaryColor,
+                    backgroundColor: primaryColor,
                     child: Text("Proceed", style: TextStyle(fontSize: 18)),
                   ),
 
-                  SizedBox(height: 20,),
+                  SizedBox(height: 20),
 
                   Center(
                     child: GestureDetector(

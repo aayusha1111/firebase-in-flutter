@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/core/color_const.dart';
-import 'package:new_project/features/constants/app_string.dart';
+import 'package:new_project/core/app_string.dart';
 import 'package:new_project/pages/forgot_password_page.dart';
 import 'package:new_project/pages/signup_page.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';

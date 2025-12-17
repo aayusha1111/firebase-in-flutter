@@ -1,21 +1,65 @@
 import 'dart:convert';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:new_project/features/authentication/bloc/auth_bloc.dart';
 import 'package:new_project/firebase_options.dart';
+import 'package:new_project/pages/signup_page.dart';
 import 'package:new_project/test_bloc/api_test.dart';
 import 'package:new_project/test_bloc/test.dart';
 import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/utils/route_generator.dart';
 
-void main() async {
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+/// Top-level function for background notification response
+@pragma('vm:entry-point')
+void backgroundNotificationHandler(
+    NotificationResponse notificationResponse) {
+  if (notificationResponse.payload != null) {
+    final data = jsonDecode(notificationResponse.payload!);
+    // Note: You cannot directly navigate from background.
+    // You can handle data or schedule local notifications.
+    print('Background notification clicked: ${data}');
+  }
+}
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  initializeLocalNotification();
+
   runApp(const MyApp());
+}
+
+void initializeLocalNotification() {
+  var androidSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
+  var iosSettings = const DarwinInitializationSettings();
+
+  var initSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+
+  flutterLocalNotificationsPlugin.initialize(
+    initSettings,
+    onDidReceiveBackgroundNotificationResponse: backgroundNotificationHandler,
+    onDidReceiveNotificationResponse: (details) {
+      if (details.payload != null) {
+        final data = jsonDecode(details.payload!);
+        navigatorKey.currentState?.pushNamed(
+          Routes.notificationsRoute,
+          arguments: NotificationPayload(
+              title: data["title"], body: data["body"]),
+        );
+      }
+    },
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -26,21 +70,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
     super.initState();
     checkPermission();
-    initializeLocalNotification();
     getNotification();
     getFcmToken();
   }
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   checkPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
@@ -63,74 +101,56 @@ class _MyAppState extends State<MyApp> {
         message.notification?.body ?? "",
       );
     });
+
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      navigatorKey.currentState?.pushNamed(Routes.notificationsRoute,arguments: NotificationPayload(
-        title: message.notification?.title,
-        body: message.notification?.body,
-      ));
+      navigatorKey.currentState?.pushNamed(
+        Routes.notificationsRoute,
+        arguments: NotificationPayload(
+          title: message.notification?.title,
+          body: message.notification?.body,
+        ),
+      );
     });
   }
 
   getFcmToken() async {
     String? token = await messaging.getToken();
-    print("token is ${token}");
-  }
-
-  initializeLocalNotification() {
-    var initializationSettingsAndroid = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-    var initializationSettingsIOS = DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-
-    flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveBackgroundNotificationResponse: (details) {
-        final data=jsonDecode(details.payload!);
-        navigatorKey.currentState?.pushNamed(Routes.notificationsRoute,arguments: NotificationPayload(title: data["title"],body: data["body"]));
-      },
-    );
+    print("FCM token: $token");
   }
 
   void showSimpleNotification(String title, String body) async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidDetails = const AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
-
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
     );
-    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
+    var iosDetails = const DarwinNotificationDetails();
+
+    var platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
     );
 
     await flutterLocalNotificationsPlugin.show(
       0,
       title,
       body,
-      platformChannelSpecifics,
+      platformDetails,
       payload: jsonEncode({"title": title, "body": body}),
     );
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [BlocProvider<CounterBloc>(create: (_)=>CounterBloc()),
-     BlocProvider<ApiBloc>(create: (_)=>ApiBloc())],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CounterBloc>(create: (_) => CounterBloc()),
+        BlocProvider<ApiBloc>(create: (_) => ApiBloc()),
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc())
+      ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
         onGenerateRoute: RouteGenerator.generateRoute,
@@ -140,7 +160,7 @@ class _MyAppState extends State<MyApp> {
           useMaterial3: false,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: PostPage(),
+        home: SignupPage(),
       ),
     );
   }
