@@ -38,7 +38,6 @@ class CounterBloc extends Bloc<CounterEvent, CounterState> {
 class ApiBloc extends Bloc<ApiEvent,ApiState>{
   ApiBloc():super(ApiInitialState()){
     on<FetchDataEvent>(_fetchPosts);
-    print("Fetching Posts");
 
   }
 }
@@ -62,7 +61,6 @@ try{
     emit(ApiErrorState("failed to load data"));
   }
 } catch(e){
-  print("Error:$e");
   emit(ApiErrorState(e.toString()));
 }
 

@@ -6,7 +6,7 @@ import 'package:new_project/test_bloc/test_state.dart';
 
 
 class TestOfBloc extends StatefulWidget {
-  TestOfBloc({super.key});
+  const TestOfBloc({super.key});
 
   @override
   State<TestOfBloc> createState() => _TestOfBlocState();

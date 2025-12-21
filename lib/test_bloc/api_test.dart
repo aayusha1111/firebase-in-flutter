@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/test_bloc/test_event.dart';
 import 'package:new_project/test_bloc/test_state.dart';
-import 'package:new_project/test_bloc/test_modal.dart'; // Post model
 
 class PostPage extends StatelessWidget {
   const PostPage({super.key});
@@ -20,7 +19,6 @@ class PostPage extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  print("Button pressed");
                   context.read<ApiBloc>().add(FetchDataEvent());
                 },
                 child: const Text("Load Posts"),
