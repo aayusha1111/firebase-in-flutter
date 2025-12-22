@@ -5,10 +5,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:new_project/features/authentication/bloc/auth_bloc.dart';
+import 'package:new_project/features/authentication/cloudinary/bloc/add_place_bloc.dart';
 import 'package:new_project/firebase_options.dart';
-import 'package:new_project/pages/signup_page.dart';
+import 'package:new_project/pages/add_place_page.dart';
 import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/utils/route_generator.dart';
+import 'package:new_project/utils/routes.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -147,7 +149,8 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider<CounterBloc>(create: (_) => CounterBloc()),
         BlocProvider<ApiBloc>(create: (_) => ApiBloc()),
-        BlocProvider<AuthBloc>(create: (_) => AuthBloc())
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
+        BlocProvider<AddPlaceBloc>(create:(_)=>AddPlaceBloc())
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -158,7 +161,7 @@ class _MyAppState extends State<MyApp> {
           useMaterial3: false,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: SignupPage(),
+        home: AddPlacePage(),
       ),
     );
   }

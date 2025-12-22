@@ -15,9 +15,13 @@ class CustomTextformfield extends StatelessWidget {
     this.title,
     this.height,
     this.width,
+    this.hintText,
+    this.maxLines,
   });
 
   String? labelText;
+  String? hintText;
+  int? maxLines;
   TextInputType? keyboardType;
   Widget? suffixIcon, prefixIcon;
   String? Function(String?)? validator;

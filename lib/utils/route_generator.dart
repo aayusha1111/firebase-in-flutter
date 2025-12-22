@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/main.dart';
+import 'package:new_project/pages/login_page.dart';
 import 'package:new_project/pages/notification_page.dart';
+import 'package:new_project/utils/routes.dart';
 
-class Routes {
-  static const String notificationsRoute = '/notifications';
-}
 
 class RouteGenerator {
   static navigateToPage(BuildContext context, String route,
@@ -29,6 +28,10 @@ class RouteGenerator {
         case Routes.notificationsRoute:
         NotificationPayload? payload=settings.arguments as NotificationPayload?;
           return MaterialPageRoute(builder: (_) => NotificationPage(notificationsPayload:payload));
+          case Routes.loginRoute:
+           return MaterialPageRoute(builder: (_) =>LoginPage());
+
+
   
           
           default:

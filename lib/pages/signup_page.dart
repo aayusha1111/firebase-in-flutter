@@ -9,6 +9,8 @@ import 'package:new_project/features/authentication/bloc/auth_state.dart';
 import 'package:new_project/features/authentication/model/user.dart';
 import 'package:new_project/pages/login_page.dart';
 import 'package:new_project/pages/verification_page.dart';
+import 'package:new_project/utils/route_generator.dart';
+import 'package:new_project/utils/routes.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';
 import 'package:new_project/widgets/custom_snackbar.dart';
 import 'package:new_project/widgets/custom_text_formfield.dart';
@@ -17,10 +19,10 @@ class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupPage> createState() => SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class SignupPageState extends State<SignupPage> {
   String? name, address, emailAddress, password;
   final _formKey = GlobalKey<FormState>();
 
@@ -197,6 +199,9 @@ class _SignupPageState extends State<SignupPage> {
                     Center(
                       child: GestureDetector(
                         onTap: () {
+                          RouteGenerator.navigateToPage(context, Routes.loginRoute);
+
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => LoginPage()),
