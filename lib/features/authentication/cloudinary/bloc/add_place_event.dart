@@ -13,3 +13,18 @@ class SubmitPlaceEvent extends AddPlaceEvent {
     required this.imageFile,
   });
 }
+
+
+//get places event
+abstract class GetPlacesEvent{}
+class FetchPlacesEvent extends GetPlacesEvent{}
+
+
+class DeletePlaceEvent extends GetPlacesEvent{
+  String? id;
+  DeletePlaceEvent({this.id});
+}
+
+
+
+

@@ -8,6 +8,7 @@ import 'package:new_project/features/authentication/bloc/auth_bloc.dart';
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_bloc.dart';
 import 'package:new_project/firebase_options.dart';
 import 'package:new_project/pages/add_place_page.dart';
+import 'package:new_project/pages/login_page.dart';
 import 'package:new_project/test_bloc/test_bloc.dart';
 import 'package:new_project/utils/route_generator.dart';
 import 'package:new_project/utils/routes.dart';

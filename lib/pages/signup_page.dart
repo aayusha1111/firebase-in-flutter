@@ -202,10 +202,7 @@ class SignupPageState extends State<SignupPage> {
                           RouteGenerator.navigateToPage(context, Routes.loginRoute);
 
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginPage()),
-                          );
+                          
                         },
                         child: Text(
                           "Didn't have an account? Login",

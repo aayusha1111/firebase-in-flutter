@@ -1,25 +1,34 @@
 class AddPlaceModel {
-  String? destination;
-  String? about;
+  final String destination;
+  final String about;
+ final String? url;
+ final String? id;
 
 
   AddPlaceModel({
-    this.destination,
-    this.about,
+   required this.destination,
+    required this.about,
+    this.url,
+    this.id
   
   });
 
-  AddPlaceModel.fromJson(Map<String, dynamic> json) {
-    destination = json['destination'];
-    about = json['about'];
+  factory AddPlaceModel.fromJson(Map<String, dynamic> json) {
+    return AddPlaceModel(
+    destination : json['destination'],
+    about : json['about'],
+    url: json['imageUrl'],
+    id:json['id']
+    );
 
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['destination'] = destination;
-    data['about'] = about;
-
-    return data;
+    return{
+    'destination': destination,
+    'about':about,
+    'imageUrl':url,
+  };
+    
   }
 }

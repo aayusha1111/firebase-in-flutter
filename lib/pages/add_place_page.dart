@@ -7,8 +7,12 @@ import 'package:new_project/features/authentication/cloudinary/bloc/add_place_bl
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_event.dart';
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_state.dart';
 import 'package:new_project/features/authentication/model/addplace.dart';
+import 'package:new_project/pages/places_list_page.dart';
+import 'package:new_project/utils/route_generator.dart';
+import 'package:new_project/utils/routes.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';
 import 'package:new_project/widgets/custom_text_formfield.dart';
+import 'package:new_project/widgets/spin_kit.dart';
 
 class AddPlacePage extends StatefulWidget {
   const AddPlacePage({super.key});
@@ -61,30 +65,32 @@ class AddPlacePageState extends State<AddPlacePage> {
     );
 
     context.read<AddPlaceBloc>().add(
-          SubmitPlaceEvent(
-            place: place,
-            imageFile: selectedImage!,
-          ),
-        );
+      SubmitPlaceEvent(place: place, imageFile: selectedImage!),
+    );
+  }
+
+  void showLoader() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => backdropFilter(context),
+    );
+  }
+
+  void hideLoader() {
+    if (Navigator.canPop(context)) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddPlaceBloc,AddPlaceState>(
-      listener: (context,state){
-         if (state is AddPlaceLoadingState) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) =>
-                 const Center(child: CircularProgressIndicator()),
-          );
+    return BlocListener<AddPlaceBloc, AddPlaceState>(
+      listener: (context, state) {
+        if (state is AddPlaceLoadingState) {
+          showLoader();
         }
-      if (state is AddPlaceLoadedState) {
-          
-          if (Navigator.canPop(context)) Navigator.pop(context);
+        if (state is AddPlaceLoadedState) {
+          hideLoader();
 
-        
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Place added successfully!"),
@@ -93,16 +99,12 @@ class AddPlacePageState extends State<AddPlacePage> {
             ),
           );
 
-          
-          setState(() {
-            destinationName = null;
-            description = null;
-            selectedImage = null;
-          });
+          RouteGenerator.navigateToPage(context, Routes.placeListRoute);
+
         }
 
         if (state is AddPlaceErrorState) {
-          if (Navigator.canPop(context)) Navigator.pop(context);
+          hideLoader();
           showError(state.message);
         }
       },
@@ -131,7 +133,7 @@ class AddPlacePageState extends State<AddPlacePage> {
                     ],
                   ),
                   SizedBox(height: 10),
-      
+
                   Text(
                     "Destination",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -145,21 +147,21 @@ class AddPlacePageState extends State<AddPlacePage> {
                       }
                       return null;
                     },
-                    onChanged: (value){
-                      destinationName=value;
+                    onChanged: (value) {
+                      destinationName = value;
                     },
                   ),
-      
+
                   SizedBox(height: 18),
                   Text(
                     "About the destination",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 10),
-      
+
                   CustomTextformfield(
                     labelText: descriptionStr,
-      
+
                     validator: (value) {
                       if (value!.isEmpty) {
                         return descriptionValidationStr;
@@ -167,20 +169,19 @@ class AddPlacePageState extends State<AddPlacePage> {
                       return null;
                     },
                     onChanged: (value) {
-                      description=value;
-                      
+                      description = value;
                     },
                   ),
                   SizedBox(height: 15),
-      
+
                   Text(
                     "Upload Image",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 8),
-      
+
                   GestureDetector(
-                    onTap: pickImage, 
+                    onTap: pickImage,
                     child: Container(
                       height: 160,
                       width: double.infinity,
@@ -210,7 +211,10 @@ class AddPlacePageState extends State<AddPlacePage> {
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                                 SizedBox(height: 4),
-                                Text("or", style: TextStyle(color: Colors.grey)),
+                                Text(
+                                  "or",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                                 SizedBox(height: 4),
                                 Text(
                                   "Upload photos of destination",
@@ -220,26 +224,26 @@ class AddPlacePageState extends State<AddPlacePage> {
                             ),
                     ),
                   ),
-      
+
                   SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-      
-                  BlocBuilder<AddPlaceBloc,AddPlaceState>(
+
+                  BlocBuilder<AddPlaceBloc, AddPlaceState>(
                     builder: (context, state) {
                       final isLoading = state is AddPlaceLoadingState;
-                    
-                    return CustomElevatedButton(
-                      backgroundColor: const Color(0xFF3D8DB5),
-                      onPressed: isLoading ? null : submitPlace,
-                    child: isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                      : const Text(
-                        "Proceed",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                    );
-  }
+
+                      return CustomElevatedButton(
+                        backgroundColor: const Color(0xFF3D8DB5),
+                        onPressed: isLoading ? null : submitPlace,
+
+                        child: Text(
+                          "Proceed",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

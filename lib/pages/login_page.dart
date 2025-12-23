@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/core/color_const.dart';
 import 'package:new_project/core/app_string.dart';
+import 'package:new_project/pages/add_place_page.dart';
 import 'package:new_project/pages/forgot_password_page.dart';
 import 'package:new_project/pages/signup_page.dart';
+import 'package:new_project/utils/route_generator.dart';
+import 'package:new_project/utils/routes.dart';
 import 'package:new_project/widgets/custom_elevated_button.dart';
 import 'package:new_project/widgets/custom_text_formfield.dart';
 
@@ -118,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (_formKey.currentState!.validate()) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => AddPlacePage()),
                       );
                     }
                   },
@@ -131,10 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
-                      );
+                      RouteGenerator.navigateToPage(context, Routes.signupRoute);
+                      
                     },
                     child: Text(
                       "Didn't have an account? Signup",
