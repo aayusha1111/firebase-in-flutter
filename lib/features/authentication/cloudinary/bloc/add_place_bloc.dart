@@ -9,20 +9,55 @@ class AddPlaceBloc extends Bloc<AddPlaceEvent, AddPlaceState> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   AddPlaceBloc() : super(AddPlaceInitialState()) {
+
+    // ================= ADD PLACE =================
     on<SubmitPlaceEvent>((event, emit) async {
       emit(AddPlaceLoadingState());
 
       try {
-        final imageUrl =
+        final imageData =
             await CloudinaryService().uploadImage(event.imageFile);
 
-        await firestore.collection('places').add({
-          ...event.place.toJson(),
-          'imageUrl': imageUrl['secure_url'],
-          'public_id': imageUrl['public_id'],
+        // ✅ CHANGE: create doc ref first
+        final docRef = firestore.collection('places').doc();
+
+        await docRef.set({
+          'destination': event.place.destination,
+          'about': event.place.about,
+          'imageUrl': imageData['secure_url'],
+          'public_id': imageData['public_id'],
           'createdAt': FieldValue.serverTimestamp(),
         });
-        
+
+        emit(AddPlaceLoadedState());
+      } catch (e) {
+        emit(AddPlaceErrorState(e.toString()));
+      }
+    });
+
+    // ================= UPDATE PLACE =================
+    on<UpdatePlaceEvent>((event, emit) async {
+      emit(AddPlaceLoadingState());
+
+      try {
+        String? imageUrl;
+        String? publicId;
+
+        if (event.imageFile != null) {
+          final imageData =
+              await CloudinaryService().uploadImage(event.imageFile!);
+          imageUrl = imageData['secure_url'];
+          publicId = imageData['public_id'];
+        }
+
+        await firestore.collection('places').doc(event.place.id).update({
+          'destination': event.place.destination,
+          'about': event.place.about, // ✅ fixed key
+          if (imageUrl != null) 'imageUrl': imageUrl, // ✅ fixed key
+          if (publicId != null) 'public_id': publicId,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
         emit(AddPlaceLoadedState());
       } catch (e) {
         emit(AddPlaceErrorState(e.toString()));
@@ -31,64 +66,45 @@ class AddPlaceBloc extends Bloc<AddPlaceEvent, AddPlaceState> {
   }
 }
 
-//get places bloc
 
-class GetPlacesBloc extends Bloc<GetPlacesEvent,GetPlacesState>{
-  final FirebaseFirestore firestore=FirebaseFirestore.instance;
 
-  GetPlacesBloc():super(GetPlacesInitialState()) {
+
+class GetPlacesBloc extends Bloc<GetPlacesEvent, GetPlacesState> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  GetPlacesBloc() : super(GetPlacesInitialState()) {
+
     on<FetchPlacesEvent>((event, emit) async {
       emit(GetPlacesLoadingState());
 
-      try{
+      try {
         final snapshot = await firestore
             .collection('places')
             .orderBy('createdAt', descending: true)
             .get();
 
-            final places = snapshot.docs.map((doc) {
-               final data = doc.data() as Map<String, dynamic>;
-
+        final places = snapshot.docs.map((doc) {
           return AddPlaceModel.fromJson({
-         'id': doc.id,
-         ...data,
-    });
+            'id': doc.id, // ✅ Firestore doc ID
+            ...doc.data(),
+          });
         }).toList();
-        print(places);
-       emit(GetPlacesLoadedState(places));
-      } catch(e){
-         emit(GetPlacesErrorState(e.toString()));
+
+        emit(GetPlacesLoadedState(places));
+      } catch (e) {
+        emit(GetPlacesErrorState(e.toString()));
       }
-      });
-
-      on<DeletePlaceEvent>((event, emit) async{
-            emit(GetPlacesLoadingState());
-             try{
-         await firestore
-        .collection('places')
-        .doc(event.id)
-        .delete();
-
-         final snapshot = await firestore
-            .collection('places')
-            .orderBy('createdAt', descending: true)
-            .get();
-
-            final places = snapshot.docs.map((doc) {
-               final data = doc.data() as Map<String, dynamic>;
-
-          return AddPlaceModel.fromJson({
-         'id': doc.id,
-         ...data,
     });
-        }).toList();
-      
-      
-       emit(GetPlacesLoadedState(places));
-      } catch(e){
-         emit(GetPlacesErrorState(e.toString()));
+
+    on<DeletePlaceEvent>((event, emit) async {
+      emit(GetPlacesLoadingState());
+
+      try {
+        await firestore.collection('places').doc(event.id).delete();
+        add(FetchPlacesEvent()); // ✅ reload after delete
+      } catch (e) {
+        emit(GetPlacesErrorState(e.toString()));
       }
-        
-      },);
-      }
+    });
+  }
 }

@@ -28,3 +28,19 @@ class GetPlacesErrorState extends GetPlacesState {
   final String message;
   GetPlacesErrorState(this.message);
 }
+
+
+//delete place state
+
+abstract class DeletePlaceState {}
+class DeletePlaceInitialState extends DeletePlaceState {}
+class DeletePlaceLoadingState extends DeletePlaceState {}
+class DeletePlaceSuccessState extends DeletePlaceState {
+  final String placeId;
+  DeletePlaceSuccessState(this.placeId);
+}
+class DeletePlaceErrorState extends DeletePlaceState {
+  final String error;
+  DeletePlaceErrorState(this.error);
+}
+

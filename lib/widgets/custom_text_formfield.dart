@@ -17,9 +17,11 @@ class CustomTextformfield extends StatelessWidget {
     this.width,
     this.hintText,
     this.maxLines,
+    this.initialValue,
   });
 
   String? labelText;
+  String? initialValue;
   String? hintText;
   int? maxLines;
   TextInputType? keyboardType;
@@ -41,6 +43,8 @@ class CustomTextformfield extends StatelessWidget {
       width: width ?? double.infinity,
       child: TextFormField(
         keyboardType: keyboardType ?? TextInputType.text,
+        initialValue: initialValue, // <-- Add this line
+        maxLines: maxLines ?? 1,     // <-- Ensure maxLines is applied
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: validator,
         onChanged: onChanged,
@@ -49,6 +53,7 @@ class CustomTextformfield extends StatelessWidget {
           suffixIcon: suffixIcon,
           prefixIcon: prefixIcon,
           labelText: labelText,
+          hintText: hintText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),

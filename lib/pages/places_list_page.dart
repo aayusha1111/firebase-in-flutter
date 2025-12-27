@@ -3,12 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_bloc.dart';
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_event.dart';
 import 'package:new_project/features/authentication/cloudinary/bloc/add_place_state.dart';
+import 'package:new_project/pages/add_place_page.dart';
 import 'package:new_project/utils/route_generator.dart';
 import 'package:new_project/utils/routes.dart';
 
-class PlacesListScreen extends StatelessWidget {
+class PlacesListScreen extends StatefulWidget {
   const PlacesListScreen({super.key});
 
+  @override
+  State<PlacesListScreen> createState() => _PlacesListScreenState();
+}
+
+class _PlacesListScreenState extends State<PlacesListScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -20,23 +26,32 @@ class PlacesListScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              RouteGenerator.navigateToPage(context, Routes.addPlaceRoute);
+              RouteGenerator.navigateToPage(
+                context,
+                Routes.addPlaceRoute,
+              );
             },
           ),
         ),
         body: BlocBuilder<GetPlacesBloc, GetPlacesState>(
           builder: (context, state) {
             if (state is GetPlacesLoadingState) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
 
             if (state is GetPlacesErrorState) {
-              return Center(child: Text(state.message));
+              return Center(
+                child: Text(state.message),
+              );
             }
 
             if (state is GetPlacesLoadedState) {
               if (state.places.isEmpty) {
-                return const Center(child: Text("No places found"));
+                return const Center(
+                  child: Text("No places found"),
+                );
               }
 
               return ListView.builder(
@@ -47,25 +62,27 @@ class PlacesListScreen extends StatelessWidget {
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 16),
+                    elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 4,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (place.url != null)
+                        // IMAGE
+                        if (place.imageUrl != null)
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(12),
                             ),
                             child: Image.network(
-                              place.url!,
+                              place.imageUrl!,
                               height: 200,
                               width: double.infinity,
                               fit: BoxFit.cover,
                             ),
                           ),
+
                         Padding(
                           padding: const EdgeInsets.all(12),
                           child: Column(
@@ -87,10 +104,17 @@ class PlacesListScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  // Edit Button
+                                  // EDIT
                                   TextButton.icon(
                                     onPressed: () {
-                                      // Navigate to AddPlacesScreen with prefilled data
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AddPlacePage(
+                                            placeToEdit: place,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     icon: const Icon(
                                       Icons.edit,
@@ -101,55 +125,66 @@ class PlacesListScreen extends StatelessWidget {
                                       style: TextStyle(color: Colors.blue),
                                     ),
                                   ),
+
                                   const SizedBox(width: 8),
-                                  // Delete Button
+
+                                  // DELETE
                                   TextButton.icon(
                                     onPressed: () async {
-                                      final blocContext = context;
-
-                                      final confirm = await showDialog<bool>(
+                                      final confirm =
+                                          await showDialog<bool>(
                                         context: context,
-                                        builder: (dialogContext) => AlertDialog(
+                                        builder: (dialogContext) =>
+                                            AlertDialog(
                                           title: const Text("Delete Place"),
                                           content: const Text(
                                             "Are you sure you want to delete this place?",
                                           ),
                                           actions: [
                                             TextButton(
-                                              onPressed: () => Navigator.pop(
+                                              onPressed: () =>
+                                                  Navigator.pop(
                                                 dialogContext,
                                                 false,
                                               ),
                                               child: const Text("Cancel"),
                                             ),
                                             TextButton(
-                                              onPressed: () => Navigator.pop(
+                                              onPressed: () =>
+                                                  Navigator.pop(
                                                 dialogContext,
                                                 true,
                                               ),
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.red,
+                                              style:
+                                                  TextButton.styleFrom(
+                                                foregroundColor:
+                                                    Colors.red,
                                               ),
-                                              child: const Text("Delete"),
+                                              child:
+                                                  const Text("Delete"),
                                             ),
                                           ],
                                         ),
                                       );
 
-                                      if (confirm == true && place.id != null) {
-                                        blocContext.read<GetPlacesBloc>().add(
-                                          DeletePlaceEvent(id: place.id!),
-                                        );
+                                      if (confirm == true) {
+                                        context
+                                            .read<GetPlacesBloc>()
+                                            .add(
+                                              DeletePlaceEvent(
+                                                id: place.id!,
+                                              ),
+                                            );
                                       }
                                     },
-
                                     icon: const Icon(
                                       Icons.delete,
                                       color: Colors.red,
                                     ),
                                     label: const Text(
                                       "Delete",
-                                      style: TextStyle(color: Colors.red),
+                                      style:
+                                          TextStyle(color: Colors.red),
                                     ),
                                   ),
                                 ],
